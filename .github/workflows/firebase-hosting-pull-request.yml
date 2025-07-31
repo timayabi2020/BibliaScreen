@@ -1,5 +1,6 @@
 name: Deploy to Firebase Hosting on PR
 on: pull_request
+
 permissions:
   checks: write
   contents: read
@@ -13,15 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ Setup Flutter SDK
+      # ✅ Install Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.4" # or your preferred version
+          flutter-version: '3.22.1'  # or omit this line to get latest stable
 
-      # ✅ Run Flutter build
+      # ✅ Confirm it's working
+      - run: flutter --version
+
+      # ✅ Build Flutter Web
       - run: flutter build web
 
-      # ✅ Deploy to Firebase preview channel
+      # ✅ Firebase Hosting Preview
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
