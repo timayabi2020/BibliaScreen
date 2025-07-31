@@ -30,3 +30,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BIBLIA_ECB6E }}
           projectId: biblia-ecb6e
+          channelId: live  # or 'preview' for preview deployments
