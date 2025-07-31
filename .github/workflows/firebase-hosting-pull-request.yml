@@ -16,7 +16,7 @@ jobs:
       - name: 🔧 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.1'  # or omit to use latest stable
+          flutter-version: '3.32.4'  # or omit to use latest stable
 
       - name: ✅ Verify Flutter Installed
         run: flutter --version
