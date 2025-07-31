@@ -30,7 +30,7 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
   final _notesController = TextEditingController();
   final _userId = 'tim_mayabi';
   final _token = 'testtoken123';
-  final _apiBase = 'http://127.0.0.1:8000';
+  final _apiBase = 'https://biblia-production-1c3d.up.railway.app';
 
   String _summary = '';
   List<Map<String, dynamic>> _flashcards = [];
