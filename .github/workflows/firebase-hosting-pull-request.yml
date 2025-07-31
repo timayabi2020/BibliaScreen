@@ -1,4 +1,5 @@
 name: Deploy to Firebase Hosting on PR
+
 on: pull_request
 
 permissions:
@@ -8,25 +9,26 @@ permissions:
 
 jobs:
   build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      # ✅ Install Flutter
-      - uses: subosito/flutter-action@v2
+      - name: 🔧 Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.1'  # or omit this line to get latest stable
+          channel: stable  # you can remove flutter-version and just use stable channel
 
-      # ✅ Confirm it's working
-      - run: flutter --version
+      - name: Verify Flutter
+        run: flutter --version
 
-      # ✅ Build Flutter Web
-      - run: flutter build web
+      - name: Build Web
+        run: flutter build web
 
-      # ✅ Firebase Hosting Preview
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy to Firebase Hosting preview channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BIBLIA_ECB6E }}
