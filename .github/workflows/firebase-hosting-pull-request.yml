@@ -1,32 +1,30 @@
-name: Deploy to Firebase Hosting on PR
+name: Deploy Flutter Web to Firebase Hosting
 
-on: pull_request
-
-permissions:
-  checks: write
-  contents: read
-  pull-requests: write
+on:
+  push:
+    branches:
+      - main  # or change this to match your default branch
 
 jobs:
-  build_and_preview:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
+      - name: 🔧 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable  # you can remove flutter-version and just use stable channel
+          flutter-version: '3.22.1'  # or omit to use latest stable
 
-      - name: Verify Flutter
+      - name: ✅ Verify Flutter Installed
         run: flutter --version
 
-      - name: Build Web
+      - name: 🛠️ Build Flutter Web
         run: flutter build web
 
-      - name: Deploy to Firebase Hosting preview channel
+      - name: 🚀 Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
