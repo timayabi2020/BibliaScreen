@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // For formatting timestamps
 
 class ReviewHistoryScreen extends StatefulWidget {
   @override
@@ -50,15 +51,21 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
     });
   }
 
+  String formatTimestamp(dynamic ts) {
+    if (ts == null || ts == '') return '🕒 Unknown';
+    try {
+      final dt = DateTime.parse(ts);
+      return DateFormat.yMMMEd().add_jm().format(dt); // e.g., Jul 31, 2025 8:03 PM
+    } catch (e) {
+      return '🕒 Invalid date';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
-    final cardColor = brightness == Brightness.dark
-        ? Colors.grey[900]
-        : Colors.white;
-    final summaryColor = brightness == Brightness.dark
-        ? Colors.yellow[100]
-        : Colors.yellow[50];
+    final cardColor = brightness == Brightness.dark ? Colors.grey[900] : Colors.white;
+    final summaryColor = brightness == Brightness.dark ? Colors.yellow[100] : Colors.yellow[50];
 
     return Scaffold(
       appBar: AppBar(
@@ -87,6 +94,7 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
                       final session = _filtered[index];
                       final summary = session['summary'];
                       final flashcards = List<Map<String, dynamic>>.from(session['flashcards']);
+                      final timestamp = formatTimestamp(session['timestamp']);
 
                       return Card(
                         color: cardColor,
@@ -100,6 +108,8 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(timestamp, style: TextStyle(fontSize: 12, color: Colors.grey)),
+                              const SizedBox(height: 6),
                               Text('📌 Summary',
                                   style: Theme.of(context).textTheme.titleMedium),
                               const SizedBox(height: 8),
@@ -109,7 +119,8 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 padding: const EdgeInsets.all(12),
-                                child: Text(summary,
+                                child: Text(
+                                  summary,
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: brightness == Brightness.dark
                                             ? Colors.black
@@ -122,20 +133,17 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
                                   style: Theme.of(context).textTheme.titleMedium),
                               const SizedBox(height: 8),
                               ...flashcards.map((fc) => Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 4),
+                                    padding: const EdgeInsets.symmetric(vertical: 4),
                                     child: ExpansionTile(
                                       collapsedShape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(
-                                            color: Colors.grey.shade300),
+                                        side: BorderSide(color: Colors.grey.shade300),
                                       ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       title: Text(fc['question'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600)),
+                                          style: TextStyle(fontWeight: FontWeight.w600)),
                                       children: [
                                         ListTile(
                                           title: Text(fc['answer']),

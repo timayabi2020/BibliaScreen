@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:bibliascreen/review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 void main() {
   runApp(BibleStudyApp());
@@ -34,9 +35,29 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
   final _userId = 'tim_mayabi';
   final _apiBase = 'https://biblia-production-1c3d.up.railway.app';
 
+  String _displayedSummary = '';
   String _summary = '';
+  Timer? _typingTimer;
   List<Map<String, dynamic>> _flashcards = [];
   bool _loading = false;
+
+  void animateSummary(String fullText) {
+    _typingTimer?.cancel(); // Cancel any existing animation
+    _displayedSummary = '';
+    int index = 0;
+    const duration = Duration(milliseconds: 30); // typing speed
+
+    _typingTimer = Timer.periodic(duration, (timer) {
+      if (index >= fullText.length) {
+        timer.cancel();
+      } else {
+        setState(() {
+          _displayedSummary += fullText[index];
+        });
+        index++;
+      }
+    });
+  }
 
   Future<void> analyzeNotes() async {
     final url = Uri.parse('$_apiBase/analyze');
@@ -46,7 +67,12 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
       'notes': _notesController.text,
     });
 
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _summary = '';
+      _displayedSummary = '';
+      _flashcards = [];
+    });
 
     final response = await http.post(url, headers: headers, body: body);
 
@@ -54,8 +80,15 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
       final data = jsonDecode(response.body);
       setState(() {
         _summary = data['summary'];
-        _flashcards = List<Map<String, dynamic>>.from(data['flashcards']);
         _loading = false;
+      });
+      animateSummary(data['summary']);
+
+      // Wait for the animation to complete before showing flashcards
+      Future.delayed(Duration(milliseconds: data['summary'].length * 30 + 300), () {
+        setState(() {
+          _flashcards = List<Map<String, dynamic>>.from(data['flashcards']);
+        });
       });
     } else {
       print('Error: ${response.body}');
@@ -114,7 +147,7 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
                     color: Colors.yellow[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: SelectableText(_summary),
+                  child: SelectableText(_displayedSummary),
                 ),
                 const SizedBox(height: 24),
                 Text('🧠 Flashcards', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
