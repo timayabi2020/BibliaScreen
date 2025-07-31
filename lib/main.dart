@@ -40,7 +40,6 @@ class _BibleNotesScreenState extends State<BibleNotesScreen> {
     final url = Uri.parse('$_apiBase/analyze');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $_token',
     };
     final body = jsonEncode({
       'user_id': _userId,

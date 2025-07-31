@@ -11,7 +11,7 @@ class ReviewHistoryScreen extends StatefulWidget {
 class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
   final _userId = 'tim_mayabi';
   final _token = 'testtoken123';
-  final _apiBase = 'https://your-api.azurewebsites.net';
+  final _apiBase = 'https://biblia-production-1c3d.up.railway.app';
 
   List<Map<String, dynamic>> _sessions = [];
   List<Map<String, dynamic>> _filtered = [];
@@ -27,7 +27,7 @@ class _ReviewHistoryScreenState extends State<ReviewHistoryScreen> {
     final url = Uri.parse('$_apiBase/review?user_id=$_userId');
     final headers = {'Authorization': 'Bearer $_token'};
 
-    final response = await http.get(url, headers: headers);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = List<Map<String, dynamic>>.from(jsonDecode(response.body));
